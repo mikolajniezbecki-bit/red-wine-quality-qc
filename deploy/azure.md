@@ -5,7 +5,7 @@ All commands run in the **Codespaces terminal**, from the repo root. Copy them o
 
 Checked against Azure CLI **2.92.0** (`az version`).
 
-**Before you start:** do Part A of [`user-tasks.md`](../user-tasks.md) (active subscription, budget alert, resource providers).
+You need an active Azure subscription.
 
 ## What gets created
 
