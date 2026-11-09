@@ -181,7 +181,6 @@ sulphates (+0.57) raise the odds of "good"; volatile acidity (−0.58), density 
 ```
 red-wine-quality-qc/
 ├── README.md
-├── SPEC.md                 # project plan and requirements
 ├── data/
 │   └── winequality-red.csv # dataset (UCI, CC BY 4.0)
 ├── notebook.ipynb          # data preparation, EDA, model selection (outputs saved)
