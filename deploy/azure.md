@@ -15,7 +15,7 @@ Everything goes into one resource group, so a single command deletes it all at t
 |----------|------|-----|
 | Resource group | `wine-qc-rg` | container for everything below |
 | Container registry (Basic) | `wineqc<8 characters>` | stores the Docker image |
-| Container Apps environment | `wine-qc-env` | the network/runtime the app runs in (created by `az containerapp up`) |
+| Container Apps environment | `wine-qc-env` | the network/runtime the app runs in (created by `az containerapp up`, **or** an existing one is reused, see step 7) |
 | Log Analytics workspace | auto-generated name | container logs (created by `az containerapp up`) |
 | Container app | `wine-qc` | runs the image and gives it a public URL |
 
@@ -60,7 +60,7 @@ az account show --query name -o tsv     # check
 
 ```bash
 RG=wine-qc-rg
-LOCATION=westeurope
+LOCATION=francecentral   # westeurope refused new resources ("location does not accept new customers")
 APP=wine-qc
 ENV_NAME=wine-qc-env
 # registry names must be globally unique: add the first 8 characters of your subscription ID
@@ -103,6 +103,21 @@ matters if you ever build on an Apple Silicon Mac). The push uploads about 130 M
 
 ## 7. Create the container app
 
+**First check whether the subscription already has a Container Apps environment** (for example from another project):
+
+```bash
+az containerapp env list --query "[].{name:name, group:resourceGroup, location:location}" -o table
+```
+
+Many subscriptions (especially free/trial ones) allow **only one** environment. Creating a second one fails with
+`MaxNumberOfGlobalEnvironmentsInSubExceeded`.
+
+- **The list is empty:** use **7a**. It creates `wine-qc-env`.
+- **An environment already exists:** use **7b**. It puts the app into that environment. An environment can run
+  several apps, which stay separate from each other, so the other project isn't affected.
+
+### 7a. New environment
+
 ```bash
 ACR_USER=$(az acr credential show --name $ACR --query username -o tsv)
 ACR_PASS=$(az acr credential show --name $ACR --query "passwords[0].value" -o tsv)
@@ -119,6 +134,35 @@ az containerapp up \
   --ingress external \
   --target-port 9696
 ```
+
+### 7b. Reuse an existing environment
+
+```bash
+ENV_ID=$(az containerapp env list --query "[0].id" -o tsv)
+# the app must live in the same region as its environment
+ENV_LOCATION=$(az containerapp env list --query "[0].location" -o tsv | tr -d ' ' | tr 'A-Z' 'a-z')
+echo $ENV_ID $ENV_LOCATION
+
+ACR_USER=$(az acr credential show --name $ACR --query username -o tsv)
+ACR_PASS=$(az acr credential show --name $ACR --query "passwords[0].value" -o tsv)
+
+az containerapp up \
+  --name $APP \
+  --resource-group $RG \
+  --location $ENV_LOCATION \
+  --environment $ENV_ID \
+  --image $IMAGE \
+  --registry-server $ACR.azurecr.io \
+  --registry-username $ACR_USER \
+  --registry-password $ACR_PASS \
+  --ingress external \
+  --target-port 9696
+```
+
+The app itself is created in `wine-qc-rg`, while the environment stays in the other project's resource group. Step 9
+therefore deletes the wine app but leaves the shared environment alone.
+
+### What the flags mean
 
 - `--ingress external`: the app gets a public HTTPS address.
 - `--target-port 9696`: the port uvicorn listens on inside the container (see the Dockerfile).
@@ -186,7 +230,9 @@ az containerapp update --name $APP --resource-group $RG --min-replicas 0    # ba
 az group delete --name $RG --yes --no-wait
 ```
 
-This deletes the resource group and **everything in it**: the app, environment, registry and logs. It runs in the
+This deletes the resource group and **everything in it**: the app, registry and logs, plus the environment if you
+used 7a. If you used 7b, the shared environment lives in the other project's resource group and is **not** deleted.
+Never delete that group. It runs in the
 background for a few minutes. Afterwards `az group exists --name wine-qc-rg` should print `false`. The README keeps
 the screenshots, so reviewers can still see that the deployment worked.
 
@@ -194,6 +240,9 @@ the screenshots, so reviewers can still see that the deployment worked.
 
 | Symptom | Likely cause / fix |
 |---------|--------------------|
+| `location does not accept new customers` | that region is full for new subscriptions: set `LOCATION=` to another region (e.g. `francecentral`, `northeurope`, `swedencentral`) and rerun from step 3 |
+| `MaxNumberOfGlobalEnvironmentsInSubExceeded` | the subscription allows only one Container Apps environment and already has one: use step 7b |
+| 7b fails with a workload-profile error | the existing environment uses workload profiles: add `--workload-profile-name Consumption` |
 | `MissingSubscriptionRegistration` | a resource provider isn't registered yet: re-run step 4 and wait |
 | `The registry name ... is already in use` | very unlikely with the subscription-ID suffix; change `ACR=` to another lowercase name (5–50 letters/digits) |
 | `docker push` → `unauthorized` | the registry login expired: run `az acr login --name $ACR` again |
