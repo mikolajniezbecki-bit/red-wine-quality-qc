@@ -48,7 +48,7 @@ az login --use-device-code
 The terminal shows a code. Open <https://microsoft.com/devicelogin> in your browser, paste the code and sign in.
 Your password never goes into Codespaces.
 
-If you have more than one subscription, select the right one (the name from `user-tasks.md` step A1):
+If you have more than one subscription, select the right one.
 
 ```bash
 az account list -o table
@@ -73,7 +73,7 @@ These are shell variables: **if you open a new terminal, run this block again** 
 
 ## 4. Make sure the resource providers are registered
 
-You did this in the portal (`user-tasks.md` A3). These commands do the same and are harmless if already done:
+These commands do the same and are harmless if already done:
 
 ```bash
 az provider register --namespace Microsoft.App --wait
