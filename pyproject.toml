@@ -9,7 +9,6 @@ dependencies = [
     "pydantic",
     "scikit-learn",
     "uvicorn",
-    "xgboost",
 ]
 
 [dependency-groups]
@@ -22,6 +21,7 @@ dev = [
     "pytest",
     "requests",
     "seaborn",
+    "xgboost",
 ]
 
 [tool.uv]
