@@ -2,7 +2,7 @@
 
 Most of the project runs inside Codespaces and needs nothing from you. Only the **Azure cloud deployment (Phase 6)** needs your own account, so you'll do those steps yourself in a web browser. You can do Part A any time before Phase 6. It takes about 10 minutes and costs nothing.
 
-The exact deployment commands come in `deploy/azure.md` during Phase 6. This file only gets your Azure account ready.
+The exact deployment commands are in [`deploy/azure.md`](deploy/azure.md). This file only gets your Azure account ready.
 
 ---
 
@@ -34,15 +34,16 @@ New subscriptions sometimes have these "switched off". Turning them on is free.
 
 ---
 
-## Part B — During Phase 6 (preview; detailed steps will be in `deploy/azure.md`)
+## Part B — Deploy (follow [`deploy/azure.md`](deploy/azure.md))
 
-For reference, this is roughly what happens then:
+The guide is ready. In short:
 1. In the Codespaces terminal you'll sign in to Azure with `az login --use-device-code`. The terminal shows a short code. Open https://microsoft.com/devicelogin in your browser, paste the code, and sign in. Your password never goes into Codespaces.
-2. You'll run a few copy-paste commands that build the Docker image in Azure and start the app. Azure then gives you a public URL.
+2. You'll run a few copy-paste commands that build the Docker image in Codespaces, upload it to your Azure container registry and start the app. Azure then gives you a public URL.
 3. You'll take two **screenshots** for the reviewers and save them in `images/`:
-   - the terminal running `test.py` against the cloud URL,
-   - the `/docs` page of the cloud URL open in your browser.
-4. After the course grading period ends, you'll delete everything with a single command so nothing keeps costing money.
+   - `images/cloud_test.png`: the terminal running `test.py` against the cloud URL,
+   - `images/cloud_docs.png`: the `/docs` page of the cloud URL open in your browser.
+4. Cost note: the container registry (Basic tier) costs roughly USD 5 per month while it exists, so your 50% budget alert will probably fire after about two weeks. That's expected, not a sign that something is wrong.
+5. After the course grading period ends, you'll delete everything with a single command so nothing keeps costing money.
 
 ---
 
