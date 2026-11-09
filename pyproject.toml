@@ -1,0 +1,28 @@
+[project]
+name = "red-wine-quality-qc"
+version = "0.1.0"
+description = "Predict whether a red Vinho Verde batch will be rated good (quality >= 7) from its lab analysis; served with FastAPI."
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "fastapi",
+    "pydantic",
+    "scikit-learn",
+    "uvicorn",
+    "xgboost",
+]
+
+[dependency-groups]
+dev = [
+    "httpx",
+    "jupyter",
+    "matplotlib",
+    "numpy",
+    "pandas",
+    "pytest",
+    "requests",
+    "seaborn",
+]
+
+[tool.uv]
+package = false
