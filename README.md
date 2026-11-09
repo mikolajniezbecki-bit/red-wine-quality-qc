@@ -199,7 +199,6 @@ red-wine-quality-qc/
 ├── deploy/
 │   └── azure.md            # step-by-step Azure Container Apps deployment
 ├── images/                 # plots used in this README + deployment screenshots
-└── user-tasks.md           # Azure account preparation
 ```
 
 ## How to run locally
