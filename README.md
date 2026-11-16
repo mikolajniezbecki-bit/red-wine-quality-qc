@@ -1,5 +1,9 @@
 # Red Wine Quality QC
 
+<p align="center">
+  <img src="images/red-wine-quality-qc-linkedin.png" alt="Red Wine Quality QC: 11 lab measurements in, probability of a good (7+/10) tasting-panel rating out" width="600">
+</p>
+
 Predict, from a batch's lab analysis, the probability that a tasting panel will rate a red *Vinho Verde* wine as
 **good** (quality ≥ 7). The model is served as a REST API, packaged with Docker and deployed on Azure Container Apps.
 
